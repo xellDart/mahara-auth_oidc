@@ -123,7 +123,7 @@ class oidcclient {
         $params = array(
             'response_type' => 'code',
             'client_id' => $this->clientid,
-            'scope' => 'openid profile email',
+            'scope' => 'openid profile email offline_access',
             'nonce' => $nonce,
             'response_mode' => 'form_post',
             'resource' => $this->resource,
@@ -191,14 +191,25 @@ class oidcclient {
             throw new \AuthInstanceException(get_string('erroroidcclientnotokenendpoint', 'auth.oidc'));
         }
 
+
+
         $params = array(
-            'client_id' => $this->clientid,
-            'client_secret' => $this->clientsecret,
+            //'client_id' => $this->clientid,
+            //'client_secret' => $this->clientsecret,
             'grant_type' => 'authorization_code',
             'code' => $code,
         );
 
+        /*
+         * Set authorization Basic Authorization: Basic base64(formEncode(client_id):formEncode(client_secret))
+         * See: https://tools.ietf.org/html/rfc6749#section-2.3.1
+         */
+        $headers = array(
+            "Authorization: Basic ...",
+        );
+
         try {
+            $this->httpclient->setHeader($headers);
             $returned = $this->httpclient->post($this->endpoints['token'], $params);
             return @json_decode($returned, true);
         }

@@ -35,9 +35,10 @@ class httpclient implements \auth_oidc\httpclientinterface {
         }
         else if ($method === 'post') {
             $curlopts[CURLOPT_POST] = true;
+            // Disable ssl verifier
+            $curlopts[CURLOPT_SSL_VERIFYPEER] = false;
             $curlopts[CURLOPT_POSTFIELDS] = $data;
         }
-
         if (!empty($this->headers)) {
             $headers = [];
             foreach ($this->headers as $k => $v) {
@@ -45,7 +46,6 @@ class httpclient implements \auth_oidc\httpclientinterface {
             }
             $curlopts[CURLOPT_HTTPHEADER] = $headers;
         }
-
         $result = mahara_http_request($curlopts);
         return $result->data;
     }
