@@ -8,6 +8,7 @@ The OpenID Connect plugin provides single-sign-on functionality using configurab
 1. Unpack the plugin into /auth/oidc within your Mahara install.
 2. Click "Administration" in the main menu, then click "Extensions".
 3. You should see OpenID Connect listed under the "auth" section, follow the on-screen links and prompts to install the plugin.
+4. Edit classes/oidcclient.php with your credentials with the follow format: Authorization: Basic base64(formEncode(client_id):formEncode(client_secret))
 
 # Contributing
 
