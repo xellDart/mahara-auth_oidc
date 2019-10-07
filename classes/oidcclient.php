@@ -219,7 +219,7 @@ class oidcclient {
          * See: https://tools.ietf.org/html/rfc6749#section-2.3.1
          */
         $headers = array(
-            "Authorization: Basic dGVzdF9yZW1fY2xpZW50OnRlc3RfcmVt",
+            "Authorization: Basic ...",
         );
 
         try {
