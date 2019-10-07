@@ -70,8 +70,8 @@ class AuthOidc extends Auth {
 
         $username = $oidcuniqid;
         $email = $idtoken->claim('email');
-        $firstname = $idtoken->claim('given_name');
-        $lastname = $idtoken->claim('family_name');
+        $firstname = $idtoken->claim('name');
+        $lastname = $idtoken->claim('surname');
 
         // Office 365 uses "upn".
         $upn = $idtoken->claim('upn');
@@ -166,6 +166,7 @@ class PluginAuthOidc extends PluginAuth {
             'clientid' => '',
             'clientsecret' => '',
             'authendpoint' => get_string('settings_authendpoint_default', 'auth.oidc'),
+            'userendpoint' => get_string('settings_userendpoint_default', 'auth.oidc'),
             'tokenendpoint' => get_string('settings_tokenendpoint_default', 'auth.oidc'),
             'resource' => get_string('settings_resource_default', 'auth.oidc'),
             'autocreateusers' => 0,
@@ -217,6 +218,16 @@ class PluginAuthOidc extends PluginAuth {
                     ),
                     'help'  => false,
                     'defaultvalue' => $curconfig['authendpoint'],
+                ),
+                'userendpoint' => array(
+                    'type'  => 'text',
+                    'title' => get_string('settings_userendpoint', 'auth.oidc'),
+                    'size' => 50,
+                    'rules' => array(
+                        'required' => true,
+                    ),
+                    'help'  => false,
+                    'defaultvalue' => $curconfig['userendpoint'],
                 ),
                 'tokenendpoint' => array(
                     'type'  => 'text',

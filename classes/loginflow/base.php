@@ -34,6 +34,7 @@ class base {
             'resource' => '',
             'authendpoint' => '',
             'tokenendpoint' => '',
+            'userendpoint' => ''
         );
         foreach ($storedconfig as $key => $value) {
             $saved = get_config_plugin('auth', 'oidc', $key);
@@ -74,7 +75,7 @@ class base {
         if (empty($this->config->clientid) || empty($this->config->clientsecret)) {
             throw new \AuthInstanceException(get_string('errorauthnocreds', 'auth.oidc'));
         }
-        if (empty($this->config->authendpoint) || empty($this->config->tokenendpoint)) {
+        if (empty($this->config->authendpoint) || empty($this->config->tokenendpoint) || empty($this->config->userendpoint)) {
             throw new \AuthInstanceException(get_string('errorauthnoendpoints', 'auth.oidc'));
         }
 
@@ -86,7 +87,7 @@ class base {
         $client = new \auth_oidc\oidcclient($this->httpclient);
         $client->setcreds($clientid, $clientsecret, $redirecturi, $resource);
 
-        $client->setendpoints(array('auth' => $this->config->authendpoint, 'token' => $this->config->tokenendpoint));
+        $client->setendpoints(array('auth' => $this->config->authendpoint, 'token' => $this->config->tokenendpoint, 'me' => $this->config->userendpoint));
         return $client;
     }
 
@@ -97,9 +98,9 @@ class base {
      * @param string $orignonce Original nonce to validate received nonce against.
      * @return array List of oidcuniqid and constructed idtoken jwt.
      */
-    protected function process_idtoken($idtoken, $orignonce = '') {
+    protected function process_idtoken($idtoken, $me, $orignonce = '') {
         // Decode and verify idtoken.
-        $idtoken = \auth_oidc\jwt::instance_from_encoded($idtoken);
+        $idtoken = \auth_oidc\jwt::instance_from_encoded($idtoken, $me);
         $sub = $idtoken->claim('sub');
         if (empty($sub)) {
             throw new \AuthInstanceException(get_string('errorauthinvalididtoken', 'auth.oidc'));

@@ -131,8 +131,14 @@ class authcode extends \auth_oidc\loginflow\base {
             throw new \AuthInstanceException(get_string('errorauthnoidtoken', 'auth.oidc'));
         }
 
+        if (!isset($tokenparams['access_token'])) {
+            throw new \AuthInstanceException(get_string('errorauthnoidtoken', 'auth.oidc'));
+        } 
+
+        $user_info = $client->get_user_info($tokenparams['access_token']);
+
         // Decode and verify idtoken.
-        list($oidcuniqid, $idtoken) = $this->process_idtoken($tokenparams['id_token'], $orignonce);
+        list($oidcuniqid, $idtoken) = $this->process_idtoken($tokenparams['id_token'], $user_info, $orignonce);
 
         require_once($CFG->docroot.'/auth/lib.php');
         $SESSION = \Session::singleton();
@@ -145,15 +151,16 @@ class authcode extends \auth_oidc\loginflow\base {
         if (empty($instanceid)) {
             throw new \UserNotFoundException(get_string('errorbadinstitution','auth.oidc'));
         }
-
         $auth = new \AuthOidc($instanceid);
+
+        //IMPORTANT SET CLAIMS
         $can_login = $auth->request_user_authorise($oidcuniqid, $tokenparams, $idtoken);
         if ($can_login === true) {
             redirect('/');
         }
         else {
             // Office 365 uses "upn".
-            $oidcusername = $oidcuniqid;
+            $oidcusername = $user_info['name'];
             $upn = $idtoken->claim('upn');
             if (!empty($upn)) {
                 $oidcusername = $upn;

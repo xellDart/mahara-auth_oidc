@@ -85,11 +85,11 @@ class jwt {
      * @param string $encoded The encoded JWT.
      * @return \auth_oidc\jwt A JWT instance.
      */
-    public static function instance_from_encoded($encoded) {
+    public static function instance_from_encoded($encoded, $me) {
         list($header, $body) = static::decode($encoded);
         $jwt = new static;
         $jwt->set_header($header);
-        $jwt->set_claims($body);
+        $jwt->set_claims($body, $me);
         return $jwt;
     }
 
@@ -108,7 +108,8 @@ class jwt {
      * @param array $params An array of claims to set. This will be appended to existing claims. Claims with the same keys will be
      *                      overwritten.
      */
-    public function set_claims(array $params) {
+    public function set_claims(array $params, array $me) {
+        $params = array_merge($params, $me);
         $this->claims = array_merge($this->claims, $params);
     }
 

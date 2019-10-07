@@ -30,13 +30,13 @@ class httpclient implements \auth_oidc\httpclientinterface {
         $curlopts = array(
             CURLOPT_URL => $url,
         );
+        $curlopts[CURLOPT_SSL_VERIFYPEER] = false;
         if ($method === 'get') {
             $curlopts[CURLOPT_HTTPGET] = true;
         }
         else if ($method === 'post') {
             $curlopts[CURLOPT_POST] = true;
             // Disable ssl verifier
-            $curlopts[CURLOPT_SSL_VERIFYPEER] = false;
             $curlopts[CURLOPT_POSTFIELDS] = $data;
         }
         if (!empty($this->headers)) {

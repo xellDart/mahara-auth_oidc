@@ -54,6 +54,7 @@ class oidcclient {
         $this->resource = (!empty($resource)) ? $resource : 'https://graph.windows.net';
     }
 
+
     /**
      * Get the set client ID.
      *
@@ -180,6 +181,23 @@ class oidcclient {
         redirect($redirecturl);
     }
 
+    public function get_user_info( $access_token ) {
+        if (empty($this->endpoints['me'])) {
+            throw new \AuthInstanceException(get_string('erroroidcclientnotokenendpoint', 'auth.oidc'));
+        }
+        $headers = array(
+            'Authorization: Bearer '. $access_token .'',
+        );
+        try {
+            $this->httpclient->setHeader($headers);
+            $returned = $this->httpclient->get($this->endpoints['me']);
+            return @json_decode($returned, true);
+        }
+        catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     /**
      * Exchange an authorization code for an access token.
      *
@@ -191,13 +209,9 @@ class oidcclient {
             throw new \AuthInstanceException(get_string('erroroidcclientnotokenendpoint', 'auth.oidc'));
         }
 
-
-
         $params = array(
-            //'client_id' => $this->clientid,
-            //'client_secret' => $this->clientsecret,
             'grant_type' => 'authorization_code',
-            'code' => $code,
+            'code' => $code
         );
 
         /*
@@ -205,7 +219,7 @@ class oidcclient {
          * See: https://tools.ietf.org/html/rfc6749#section-2.3.1
          */
         $headers = array(
-            "Authorization: Basic ...",
+            "Authorization: Basic dGVzdF9yZW1fY2xpZW50OnRlc3RfcmVt",
         );
 
         try {
